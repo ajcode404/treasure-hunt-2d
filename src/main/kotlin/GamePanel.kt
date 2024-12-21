@@ -18,6 +18,13 @@ class GamePanel : JPanel(), Runnable {
     private val screenWidth = tileSize * maxScreenCol //  1024 pixels
     private val screenHeight = tileSize * maxScreenRow // 768 pixels
 
+    companion object {
+        // FPS
+        private const val ONE_BILLION_NANO_SECOND = 1_000_000_000
+        private const val ONE_MILLION_NANO_SECOND = 1_000_000
+        private const val FPS = 60
+    }
+
     val keyHandler = KeyHandler()
 
     // Set players default position
@@ -40,10 +47,19 @@ class GamePanel : JPanel(), Runnable {
 
     override fun run() {
         while(true) {
+            val drawInterval = ONE_BILLION_NANO_SECOND / FPS // 0.16666 seconds
+            val nextDrawTime = System.nanoTime() + drawInterval
+
             // UPDATE : update information such as character information
             update()
             // DRAW : draw the screen with updated information
             repaint()
+
+            // sleep method accept time in millis hence converting time to millis
+            val remainingTime = (nextDrawTime - System.nanoTime()) / ONE_MILLION_NANO_SECOND
+            if (remainingTime >= 0) {
+                Thread.sleep(remainingTime)
+            }
         }
     }
 
