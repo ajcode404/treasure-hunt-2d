@@ -48,7 +48,7 @@ class GamePanel : JPanel(), Runnable {
     override fun run() {
         while(true) {
             val drawInterval = ONE_BILLION_NANO_SECOND / FPS // 0.16666 seconds
-            val nextDrawTime = System.nanoTime() + drawInterval
+            var nextDrawTime = System.nanoTime() + drawInterval
 
             // UPDATE : update information such as character information
             update()
@@ -60,6 +60,7 @@ class GamePanel : JPanel(), Runnable {
             if (remainingTime >= 0) {
                 Thread.sleep(remainingTime)
             }
+            nextDrawTime += drawInterval
         }
     }
 
