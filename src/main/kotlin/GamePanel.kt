@@ -25,6 +25,13 @@ class GamePanel : JPanel(), Runnable {
     var playerY = 100
     var playerSpeed = 4
 
+    companion object {
+        // FPS
+        private const val ONE_BILLION_NANO_SECOND = 1_000_000_000
+        private const val ONE_MILLION_NANO_SECOND = 1_000_000
+        private const val FPS = 60
+    }
+
     init {
         this.preferredSize = Dimension(screenWidth, screenHeight)
         this.background = Color.black
@@ -39,11 +46,37 @@ class GamePanel : JPanel(), Runnable {
     }
 
     override fun run() {
-        while(true) {
-            // UPDATE : update information such as character information
-            update()
-            // DRAW : draw the screen with updated information
-            repaint()
+
+        val drawInterval: Double = ONE_BILLION_NANO_SECOND.toDouble() / FPS.toDouble()
+        var delta = 0.toDouble()
+        var lastTime = System.nanoTime()
+        var currentTime: Long
+
+        var timer = 0L
+        var drawCount = 0
+
+        while (true) {
+            currentTime = System.nanoTime()
+            delta += ((currentTime - lastTime) / drawInterval)
+
+            timer += (currentTime - lastTime)
+            lastTime = currentTime
+
+            if (delta >= 1) {
+                // UPDATE : update information such as character information
+                update()
+                // DRAW : draw the screen with updated information
+                repaint()
+                delta -= 1
+                drawCount += 1
+            }
+
+            if (timer >= ONE_BILLION_NANO_SECOND) {
+                println("FPS: $drawCount")
+                drawCount = 0
+                timer = 0
+            }
+
         }
     }
 
